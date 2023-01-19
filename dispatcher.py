@@ -13,13 +13,14 @@ import glob
 
 ### Import personal libraries
 # dir_github = '/media/rich/Home_Linux_partition/github_repos'
-dir_github = '/n/data1/hms/neurobio/sabatini/rich/github_repos'
+# dir_github = '/n/data1/hms/neurobio/sabatini/rich/github_repos'
+dir_github = '/n/data1/hms/neurobio/sabatini/gyu/github_clone'
 
 import sys
 sys.path.append(dir_github)
 # %load_ext autoreload
 # %autoreload 2
-from basic_neural_processing_modules import container_helpers, server
+from basic_neural_processing_modules import container_helpers, server_wo_paramiko
 # from s2p_on_o2 import remote_run_s2p
 
 
@@ -67,8 +68,8 @@ params_template = {
         'nplanes': 1,
         'nchannels': 1,
         'functional_chan': 1,
-        'tau': 1.35,
-        'fs': 5.14,
+        'tau': 0.7,
+        'fs': 30,
         'multiplane_parallel': False,
         'preclassify': 0.0,
         'save_mat': False,
@@ -82,8 +83,8 @@ params_template = {
         'align_by_chan': 1,
         'nonrigid': True,
         'block_size': [128, 128],
-        'diameter': 12,
-        # 'spatial_scale': 2,
+        # 'diameter': 12,
+        'spatial_scale': 2,
         'connected': True,
         'max_iterations': 20,
         'threshold_scaling': 1.0,
@@ -153,11 +154,11 @@ sbatch_config_list = \
 [f"""#!/usr/bin/bash
 #SBATCH --job-name={name_slurm}
 #SBATCH --output={path}
-#SBATCH --partition=priority
-#SBATCH -c 20
+#SBATCH --partition=short
+#SBATCH -c 8
 #SBATCH -n 1
-#SBATCH --mem=240GB
-#SBATCH --time=0-06:00:00
+#SBATCH --mem=128GB
+#SBATCH --time=0-04:00:00
 
 unset XDG_RUNTIME_DIR
 
@@ -169,13 +170,14 @@ echo "loading modules"
 module load gcc/9.2.0
 
 echo "activating environment"
-source activate suite2p
+# source activate suite2p
+source activate /n/data1/hms/neurobio/sabatini/rich/virtual_envs/suite2p
 
 echo "starting job"
-python "$@"
+python3 "$@"
 """ for path in paths_log]
 
-server.batch_run(
+server_wo_paramiko.batch_run(
     paths_scripts=paths_scripts,
     params_list=params_list,
     sbatch_config_list=sbatch_config_list,
