@@ -20,7 +20,8 @@ import sys
 sys.path.append(dir_github)
 # %load_ext autoreload
 # %autoreload 2
-from basic_neural_processing_modules import container_helpers, server_wo_paramiko
+from bnpm import container_helpers, server
+# from basic_neural_processing_modules import container_helpers, server_wo_paramiko
 # from s2p_on_o2 import remote_run_s2p
 
 
@@ -177,7 +178,8 @@ echo "starting job"
 python3 "$@"
 """ for path in paths_log]
 
-server_wo_paramiko.batch_run(
+# server_wo_paramiko.batch_run(
+server.batch_run(
     paths_scripts=paths_scripts,
     params_list=params_list,
     sbatch_config_list=sbatch_config_list,
